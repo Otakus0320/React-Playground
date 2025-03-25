@@ -1,12 +1,25 @@
-import MonacoEditor, { OnMount } from '@monaco-editor/react'
+import MonacoEditor, {EditorProps, OnMount} from '@monaco-editor/react'
 import {createATA} from "./ata.ts";
+import {editor} from 'monaco-editor'
 
-const Editor = () => {
-    const code = `const App = () => {
-    return <div>test</div>    
+export interface EditorFile {
+    name: string;
+    value: string;
+    language: string;
 }
-export default App
-`;
+
+interface Props {
+    file: EditorFile;
+    onChange?: EditorProps['onChange'];
+    options?: editor.IStandaloneEditorConstructionOptions
+}
+
+const Editor = (props: Props) => {
+    const {
+        file,
+        onChange,
+        options
+    } = props;
 
     const handleEditorMount: OnMount = (editor, monaco) => {
         // format code
@@ -31,10 +44,11 @@ export default App
     return (
         <MonacoEditor
             height="100%"
-            path={"test.tsx"}
-            language={"typescript"}
+            path={file.name}
+            language={file.language}
             onMount={handleEditorMount}
-            value={code}
+            onChange={onChange}
+            value={file.value}
             options={
                 {
                     fontSize: 14,
@@ -46,6 +60,7 @@ export default App
                         verticalScrollbarSize: 6,
                         horizontalScrollbarSize: 6,
                     },
+                    ...options
                 }
             }
         />
