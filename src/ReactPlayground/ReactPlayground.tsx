@@ -11,7 +11,6 @@ import "./react-playground.scss"
 const ReactPlayground = () => {
     const {
         theme,
-        setTheme,
     } = useContext(PlaygroundContext);
     return (
         <div className={theme} style={{height: "100vh"}}>
