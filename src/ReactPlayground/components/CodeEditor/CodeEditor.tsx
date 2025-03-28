@@ -5,6 +5,7 @@ import {PlaygroundContext} from "../PlaygroundContext.tsx";
 
 const CodeEditor = () => {
      const {
+         theme,
          files,
          setFiles,
          selectedFileName,
@@ -21,7 +22,7 @@ const CodeEditor = () => {
     return (
         <div style={{display: "flex", flexDirection:"column", height: "100%"}}>
             <FileNameList />
-            <Editor file={file} onChange={onEditorChange} />
+            <Editor file={file} onChange={onEditorChange} options={{theme: `vs-${theme}`}} />
         </div>
     )
 }
