@@ -29,7 +29,7 @@ const FileNameList = () => {
     }
 
     const addTab = () => {
-        const newFileName: string = "comp" + Math.random().toString().slice(2,8) + ".tsx";
+        const newFileName: string = "comp" + Math.random().toString().slice(2,6) + ".tsx";
         addFile(newFileName);
         setSelectedFileName(newFileName);
         setCreating(true);

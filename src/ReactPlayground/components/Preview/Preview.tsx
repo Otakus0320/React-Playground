@@ -1,9 +1,9 @@
-import {useContext, useEffect, useState} from "react";
+import {useContext, useEffect, useRef, useState} from "react";
 import {PlaygroundContext} from "../PlaygroundContext.tsx";
-import {compile} from "./compiler.ts";
 import iframeRaw from "./iframe.html?raw"
 import {IMPORT_MAP_FILE_NAME} from "../../files.ts";
 import Message from "../Message/Message.tsx";
+import CompilerWorker from "./compiler.worker?worker"
 
 interface MessageData {
     data: {
@@ -17,11 +17,6 @@ const Preview = () => {
     const [compiledCode, setCompiledCode] = useState("");
     const [error, setError] = useState("");
 
-    useEffect(() => {
-        const res = compile(files);
-        setCompiledCode(res)
-    }, [files])
-
     const getIframeUrl = () => {
         const res = iframeRaw
             .replace(
@@ -34,9 +29,6 @@ const Preview = () => {
             )
         return URL.createObjectURL(new Blob([res], {type: "text/html"}))
     }
-    useEffect(() => {
-        setIframeUrl(getIframeUrl())
-    }, [files[IMPORT_MAP_FILE_NAME].value, compiledCode]);
 
     const [iframeUrl, setIframeUrl] = useState(getIframeUrl());
 
@@ -48,11 +40,33 @@ const Preview = () => {
     }
 
     useEffect(() => {
+        setIframeUrl(getIframeUrl())
+    }, [files[IMPORT_MAP_FILE_NAME].value, compiledCode]);
+
+    useEffect(() => {
         window.addEventListener('message', handleMessage);
         return () => {
             window.removeEventListener('message', handleMessage);
         }
     }, []);
+
+    const compilerWorkerRef = useRef<Worker>(null);
+    useEffect(() => {
+        if (!compilerWorkerRef.current){
+            compilerWorkerRef.current = new CompilerWorker;
+            compilerWorkerRef.current.addEventListener("message", ({data}) => {
+                if (data.type === "COMPILED_CODE"){
+                    setCompiledCode(data.data)
+                } else {
+                    console.log("error", data)
+                }
+            })
+        }
+    }, []);
+
+    useEffect(() => {
+        compilerWorkerRef.current?.postMessage(files)
+    }, [files])
 
     return (
         <div style={{height: '100%'}}>
