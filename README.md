@@ -1,2 +1,2 @@
 # React Playground
-## try it on <a href="react-playground-6iq.pages.dev">here</a>
+## try it on <a href="https://react-playground-6iq.pages.dev">here</a>
